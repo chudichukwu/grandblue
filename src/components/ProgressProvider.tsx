@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { browserDailyEntryRepository } from "@/lib/repositories/daily-entries";
 import type { DailyEntry, DailyEntryInput } from "@/lib/types";
+import { useToast } from "@/components/ToastProvider";
 
 interface ProgressContextValue {
   entries: DailyEntry[];
@@ -16,6 +17,7 @@ interface ProgressContextValue {
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
+  const { showToast } = useToast();
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -43,9 +45,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         const saved = await browserDailyEntryRepository.save(input);
         setEntries((current) => [saved, ...current.filter((entry) => entry.id !== saved.id && entry.date !== saved.date)].sort((a, b) => b.date.localeCompare(a.date)));
         setError(null);
+        showToast("Check-in saved", "Your dashboard and history are up to date.");
         return true;
       } catch (saveError) {
-        setError(saveError instanceof Error ? saveError.message : "The check-in could not be saved.");
+        const message = saveError instanceof Error ? saveError.message : "The check-in could not be saved.";
+        setError(message); showToast("Save failed", message, "error");
         return false;
       }
     },
@@ -54,13 +58,15 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         await browserDailyEntryRepository.delete(id);
         setEntries((current) => current.filter((entry) => entry.id !== id));
         setError(null);
+        showToast("Check-in deleted", "The entry was removed from your history.");
         return true;
       } catch (deleteError) {
-        setError(deleteError instanceof Error ? deleteError.message : "The check-in could not be deleted.");
+        const message = deleteError instanceof Error ? deleteError.message : "The check-in could not be deleted.";
+        setError(message); showToast("Delete failed", message, "error");
         return false;
       }
     },
-  }), [entries, error, hydrated, reload]);
+  }), [entries, error, hydrated, reload, showToast]);
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

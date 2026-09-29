@@ -14,7 +14,6 @@ export default function CheckInPage() {
   const { entries, error: storageError, saveEntry } = useProgress();
   const [form, setForm] = useState(initialForm);
   const [formError, setFormError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const loadedDate = useRef("");
   const total = useMemo(() => form.courseraMinutes + form.practiceMinutes + form.projectMinutes + form.reviewMinutes, [form]);
@@ -48,30 +47,27 @@ export default function CheckInPage() {
     } else {
       setForm({ ...initialForm, date });
     }
-    setSaved(false);
   }
 
   function setNumber(field: NumericField, value: string) {
     setForm((current) => ({ ...current, [field]: Math.max(0, Math.floor(Number(value) || 0)) }));
-    setSaved(false);
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     if (saving) return;
-    event.preventDefault(); setSaved(false);
+    event.preventDefault();
     if (!form.date || form.date > todayKey) { setFormError("Choose today or an earlier date."); return; }
     if (total <= 0) { setFormError("Record at least one minute of study time."); return; }
     if (!Number.isInteger(form.modulesCompleted)) { setFormError("Modules completed must be a whole number."); return; }
     setFormError(null);
     setSaving(true);
-    if (await saveEntry(form)) { setSaved(true); window.setTimeout(() => setSaved(false), 4000); }
+    await saveEntry(form);
     setSaving(false);
   }
 
   return <div className={styles.page}>
     <header className={styles.heading}><div><span className="eyebrow">Daily evidence</span><h1>Log the work.</h1><p>Capture the hours, friction and lessons while they are fresh.</p></div><div className={styles.total}><span>Today’s total</span><strong>{Math.floor(total / 60)}h {total % 60}m</strong><small>{Math.round((total / 300) * 100)}% of daily target</small></div></header>
     {(formError || storageError) && <div className="error-banner" role="alert">{formError || storageError}</div>}
-    {saved && <div className={styles.toast} role="status"><strong>Check-in saved</strong><span>Your dashboard and history are up to date.</span></div>}
     <form onSubmit={submit} className={styles.form} noValidate>
       <section className={styles.section}><div className={styles.sectionNumber}>01</div><div className={styles.sectionBody}><div className={styles.sectionHeading}><h2>Time invested</h2><p>Enter focused minutes for each part of the sprint.</p></div>
         <div className={styles.fields}><label className={styles.full}>Date<input type="date" value={form.date} max={todayKey} required onChange={(event) => changeDate(event.target.value)} />{duplicate && <small>An entry exists for this date. Its values are loaded below and saving will update it.</small>}</label>

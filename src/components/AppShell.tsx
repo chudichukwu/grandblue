@@ -9,6 +9,7 @@ import { LearningProvider } from "@/components/LearningProvider";
 import { signOut } from "@/app/auth/actions";
 import { TimerProvider, useTimer } from "@/components/TimerProvider";
 import { BreakBanner } from "@/components/BreakBanner";
+import { useToast } from "@/components/ToastProvider";
 import styles from "./AppShell.module.css";
 
 const navigation = [
@@ -23,6 +24,7 @@ function NotificationLink(){const{notifications}=useTimer();const count=notifica
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { showToast } = useToast();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className={styles.target}>TARGET · 30 HOURS</span>
               <NotificationLink />
               <form action={signOut}><button className={styles.signOut} type="submit">Sign out</button></form>
-              <button className={styles.themeButton} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
+              <button className={styles.themeButton} onClick={() => { const next=theme === "dark" ? "light" : "dark";setTheme(next);showToast("Theme updated",`${next[0].toUpperCase()+next.slice(1)} theme is active.`); }} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
                 {theme === "dark" ? "☼" : "◐"}
               </button>
             </div>
