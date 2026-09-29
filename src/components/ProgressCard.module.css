@@ -1,0 +1,9 @@
+.card { min-height: 154px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); display: flex; flex-direction: column; }
+.label { color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-size: 10px; font-weight: 750; }
+.card strong { margin-top: auto; padding-top: 18px; font-family: var(--font-geist-mono); font-size: clamp(27px, 3vw, 38px); letter-spacing: -.07em; line-height: 1; }
+.detail { margin-top: 7px; color: var(--muted); font-size: 12px; }
+.track { height: 4px; margin-top: 18px; background: var(--track); overflow: hidden; border-radius: 99px; }
+.track span { display: block; height: 100%; background: var(--accent); border-radius: inherit; transition: width .4s ease; }
+.orange .track span { background: var(--warning); }
+.green .track span { background: var(--success); }
+@media (prefers-reduced-motion: reduce) { .track span { transition: none; } }
