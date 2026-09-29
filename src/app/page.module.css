@@ -19,6 +19,7 @@
 .recentList time { display: flex; align-items: baseline; gap: 6px; font-family: var(--font-geist-mono); }.recentList time strong { font-size: 21px; }.recentList time span { font-size: 10px; color: var(--muted); text-transform: uppercase; }
 .entrySummary strong { font-size: 13px; }.entrySummary p { margin-top: 4px; max-width: 680px; color: var(--muted); font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .scores { display: flex; gap: 18px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }.scores span { display: grid; gap: 3px; }.scores b { color: var(--text); font-family: var(--font-geist-mono); font-size: 12px; }
+.empty { padding: 30px 4px; border-top: 1px solid var(--line); }.empty strong { font-size: 14px; }.empty p { margin: 7px 0 14px; color: var(--muted); font-size: 12px; }.empty a { color: var(--accent); font-size: 12px; font-weight: 750; }
 @media (max-width: 1120px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .scores { display: none; } }
 @media (max-width: 620px) { .heading { align-items: flex-start; flex-direction: column; }.metrics { grid-template-columns: repeat(2, 1fr); }.recentList article { grid-template-columns: 52px 1fr; }.chartPanel { padding-inline: 12px; } }

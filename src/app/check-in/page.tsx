@@ -49,13 +49,13 @@ export default function CheckInPage() {
     setSaved(false);
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setSaved(false);
     if (!form.date || form.date > todayKey) { setFormError("Choose today or an earlier date."); return; }
     if (total <= 0) { setFormError("Record at least one minute of study time."); return; }
     if (!Number.isInteger(form.modulesCompleted)) { setFormError("Modules completed must be a whole number."); return; }
     setFormError(null);
-    if (saveEntry(form)) setSaved(true);
+    if (await saveEntry(form)) setSaved(true);
   }
 
   return <div className={styles.page}>

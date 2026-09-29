@@ -1,0 +1,10 @@
+project_id = "grand-blue"
+
+[auth]
+site_url = "http://localhost:3100"
+additional_redirect_urls = ["http://localhost:3100/auth/callback", "http://localhost:3100/auth/update-password", "http://localhost:3000/auth/callback", "http://localhost:3000/auth/update-password"]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true

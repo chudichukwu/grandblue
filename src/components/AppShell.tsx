@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProgressProvider } from "@/components/ProgressProvider";
+import { LocalDataImport } from "@/components/LocalDataImport";
+import { signOut } from "@/app/auth/actions";
 import styles from "./AppShell.module.css";
 
 const navigation = [
@@ -36,6 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [theme]);
 
+  if (pathname.startsWith("/auth/")) return <>{children}</>;
+
   return (
     <ProgressProvider>
       <div className={styles.shell}>
@@ -64,11 +68,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className={styles.mobileBrand}>grand blue</span>
             <div className={styles.topbarActions}>
               <span className={styles.target}>TARGET · 30 HOURS</span>
+              <form action={signOut}><button className={styles.signOut} type="submit">Sign out</button></form>
               <button className={styles.themeButton} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
                 {theme === "dark" ? "☼" : "◐"}
               </button>
             </div>
           </header>
+          <LocalDataImport />
           <main className={styles.content}>{children}</main>
           <nav className={styles.mobileNav} aria-label="Mobile navigation">
             {navigation.map((item) => <Link key={item.href} href={item.href} className={pathname === item.href ? styles.active : undefined}>{item.label}</Link>)}

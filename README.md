@@ -1,21 +1,85 @@
 # Grand Blue
 
-A dark-first personal accountability app for a six-week data-analysis learning sprint. Phase 1 includes a progress dashboard, daily check-ins, local browser persistence, responsive navigation, charts, and a light theme.
+Grand Blue is a dark-first accountability app for a six-week data-analysis sprint. The production data foundation uses Supabase Auth, Postgres, cookie-based App Router sessions, server-validated mutations, and Row-Level Security.
 
-## Run locally
+## Architecture
+
+- `src/app`: Next.js App Router pages, auth actions, callback handler, and authenticated API routes.
+- `src/components`: the existing application shell and dashboard components plus the one-time local import prompt.
+- `src/lib/repositories`: repository interfaces and Supabase-backed data access. Every server repository is scoped to a verified user ID.
+- `src/lib/supabase`: browser, server, and proxy clients using `@supabase/ssr`.
+- `src/lib/validation`: Zod schemas shared by server mutations and local-data migration.
+- `supabase/migrations`: reproducible Postgres schema, constraints, indexes, triggers, grants, and RLS policies.
+- `supabase/tests`: database policy checks for the local Supabase test runner.
+
+Phase 1 stored `DailyEntry` records in `localStorage` under `grand-blue.progress.v1`. Phase 2 makes Postgres the source of truth. After sign-in, valid Phase 1 data is offered for one-time import and is retained locally unless the entire import succeeds. localStorage is otherwise limited to the visual theme and temporary migration input.
+
+## Local setup
+
+1. Install Node dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Install or invoke the Supabase CLI and start the local stack:
+
+   ```bash
+   npx supabase start
+   npx supabase db reset
+   ```
+
+   `db reset` recreates the local database and applies every file in `supabase/migrations`.
+
+3. Copy the environment template:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+4. Copy the local API URL and publishable/anon key printed by `npx supabase status` into `.env.local`:
+
+   ```text
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-local-publishable-key
+   ```
+
+5. Start the application:
+
+   ```bash
+   npm run dev -- --port 3100
+   ```
+
+   Port 3100 is already configured in `supabase/config.toml`.
+
+## Hosted Supabase setup
+
+Create a Supabase project, then link and deploy the version-controlled migration:
 
 ```bash
-npm install
-npm run dev
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Progress is stored in the current browser with `localStorage`; a realistic sample dataset is added on the first visit.
+In Supabase Authentication URL Configuration, set the production Site URL and allow these redirect URLs:
 
-## Checks
+- `https://YOUR_DOMAIN/auth/callback`
+- `https://YOUR_DOMAIN/auth/update-password`
+- local equivalents used during development
+
+Email confirmations are enabled in `supabase/config.toml` for local development. Confirm that email confirmation is enabled for the hosted project and customize the hosted email templates as needed.
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the deployment platform. Do not add a service-role key, Telegram bot token, or VAPID private key to any `NEXT_PUBLIC_` variable. This phase does not require those secrets.
+
+## Verification
 
 ```bash
+npm run typecheck
 npm run lint
+npm test
 npm run build
+npx supabase test db
 ```
 
-Phase 2 will add the six-week plan and history screens.
+The final database command requires Docker and a running local Supabase stack.
