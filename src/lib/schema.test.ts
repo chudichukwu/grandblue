@@ -24,4 +24,12 @@ describe("production schema security contract", () => {
     for (const field of ["idempotency_key", "scheduled_for", "claimed_at", "delivered_at", "attempt_count", "last_error"]) expect(migration).toContain(field);
     expect(migration).toContain("unique (user_id, idempotency_key)");
   });
+  it("protects duplicate daily submissions", () => expect(migration).toContain("unique (user_id, entry_date)"));
+});
+
+describe("phase 3 migration contract", () => {
+  const phase3 = readFileSync(join(process.cwd(), "supabase/migrations/20260929100000_phase_3_learning_plans_tasks.sql"), "utf8");
+  it("creates the default plan idempotently", () => { expect(phase3).toContain("learning_plans_one_default_per_user_idx"); expect(phase3).toContain("pg_advisory_xact_lock"); expect(phase3).toContain("if plan_id is null"); expect(phase3.match(/\(owner_id, plan_id, [1-6],/g)).toHaveLength(6); });
+  it("protects repeated task submissions", () => expect(phase3).toContain("tasks_user_request_id_idx"));
+  it("adds the complete task management model", () => { for(const field of ["scheduled_date","estimated_minutes","actual_minutes","priority","category","deadline","notes"]) expect(phase3).toContain(field); });
 });

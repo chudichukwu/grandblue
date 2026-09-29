@@ -33,7 +33,7 @@
   .mobileBrand { display: block; }
   .target { display: none; }
   .content { padding-top: 28px; }
-  .mobileNav { display: grid; grid-template-columns: 1fr 1fr; position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); background: var(--surface-deep); border-top: 1px solid var(--line); }
+  .mobileNav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); background: var(--surface-deep); border-top: 1px solid var(--line); }
   .mobileNav a { text-align: center; padding: 10px; color: var(--muted); font-size: 12px; font-weight: 700; }
   .mobileNav .active { color: var(--accent); }
 }

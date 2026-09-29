@@ -19,15 +19,33 @@ export interface DailyEntry {
 
 export type DailyEntryInput = Omit<DailyEntry, "id" | "createdAt" | "updatedAt">;
 
-export interface PlannedTask {
-  id: string;
-  title: string;
-  category: "Course" | "Practice" | "Project" | "Review";
-  durationMinutes: number;
-  completed: boolean;
-}
-
 export interface StoredData {
   version: 1;
   entries: DailyEntry[];
 }
+
+export type TaskPriority = "low" | "medium" | "high";
+export type TaskCategory = "course" | "practice" | "project" | "review";
+
+export interface LearningTask {
+  id: string; weekId: string; title: string; detail: string; scheduledDate: string | null;
+  estimatedMinutes: number; actualMinutes: number; priority: TaskPriority; category: TaskCategory;
+  deadline: string | null; position: number; completedAt: string | null; notes: string;
+  createdAt: string; updatedAt: string;
+}
+
+export interface PlanWeek {
+  id: string; weekNumber: number; title: string; description: string; outcome: string;
+  startsOn: string | null; endsOn: string | null; targetMinutes: number; notes: string;
+  tasks: LearningTask[];
+}
+
+export interface LearningPlan {
+  id: string; title: string; description: string; startsOn: string; endsOn: string;
+  weeklyTargetMinutes: number; status: "draft" | "active" | "completed" | "archived";
+  notes: string; weeks: PlanWeek[];
+}
+
+export interface Profile { timezone: string; displayName: string | null; }
+
+export type LearningTaskInput = Omit<LearningTask, "id" | "completedAt" | "createdAt" | "updatedAt"> & { completed: boolean; clientRequestId: string };

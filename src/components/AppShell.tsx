@@ -5,12 +5,15 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProgressProvider } from "@/components/ProgressProvider";
 import { LocalDataImport } from "@/components/LocalDataImport";
+import { LearningProvider } from "@/components/LearningProvider";
 import { signOut } from "@/app/auth/actions";
 import styles from "./AppShell.module.css";
 
 const navigation = [
   { href: "/", label: "Dashboard", icon: "01" },
   { href: "/check-in", label: "Daily check-in", icon: "02" },
+  { href: "/plan", label: "Six-week plan", icon: "03" },
+  { href: "/history", label: "History", icon: "04" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -41,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (pathname.startsWith("/auth/")) return <>{children}</>;
 
   return (
-    <ProgressProvider>
+    <ProgressProvider><LearningProvider>
       <div className={styles.shell}>
         <aside className={styles.sidebar}>
           <Link href="/" className={styles.brand} aria-label="Grand Blue dashboard">
@@ -55,8 +58,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span>{item.icon}</span>{item.label}
               </Link>;
             })}
-            <span className={styles.comingSoon}><span>03</span>Six-week plan <small>Phase 2</small></span>
-            <span className={styles.comingSoon}><span>04</span>History <small>Phase 2</small></span>
           </nav>
           <div className={styles.sidebarFooter}>
             <span className={styles.statusDot} aria-hidden="true" /> Sprint in progress
@@ -81,6 +82,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </div>
-    </ProgressProvider>
+    </LearningProvider></ProgressProvider>
   );
 }

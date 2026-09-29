@@ -15,6 +15,7 @@
 .check { flex: 0 0 21px; width: 21px; height: 21px; border: 1px solid var(--faint); border-radius: 4px; display: grid; place-items: center; color: #071014; font-size: 12px; font-weight: 900; }
 .tasks div { display: grid; gap: 4px; }.tasks strong { font-size: 13px; }.tasks small { font-size: 10px; color: var(--muted); }
 .tasks .done .check { border-color: var(--success); background: var(--success); }.tasks .done strong { color: var(--muted); text-decoration: line-through; }
+.deadlines{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.deadlines p{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:11px}.deadlines small{color:var(--warning)}
 .recentList { display: grid; }.recentList article { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 18px; border-top: 1px solid var(--line); padding: 16px 0; }
 .recentList time { display: flex; align-items: baseline; gap: 6px; font-family: var(--font-geist-mono); }.recentList time strong { font-size: 21px; }.recentList time span { font-size: 10px; color: var(--muted); text-transform: uppercase; }
 .entrySummary strong { font-size: 13px; }.entrySummary p { margin-top: 4px; max-width: 680px; color: var(--muted); font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }

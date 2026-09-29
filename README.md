@@ -1,6 +1,6 @@
 # Grand Blue
 
-Grand Blue is a dark-first accountability app for a six-week data-analysis sprint. The production data foundation uses Supabase Auth, Postgres, cookie-based App Router sessions, server-validated mutations, and Row-Level Security.
+Grand Blue is a dark-first accountability app for a six-week data-analysis sprint. Supabase Auth and Postgres provide cross-device check-ins, learning plans, tasks, and history through cookie-based App Router sessions, server-validated mutations, and Row-Level Security.
 
 ## Architecture
 
@@ -11,6 +11,8 @@ Grand Blue is a dark-first accountability app for a six-week data-analysis sprin
 - `src/lib/validation`: Zod schemas shared by server mutations and local-data migration.
 - `supabase/migrations`: reproducible Postgres schema, constraints, indexes, triggers, grants, and RLS policies.
 - `supabase/tests`: database policy checks for the local Supabase test runner.
+
+Phase 3 adds an idempotently seeded six-week plan, editable plan weeks, task CRUD and ordering, cloud-backed history, timezone-aware dashboard calculations, and retry-safe task creation. Apply both migration files with `npx supabase db push` before running the updated application.
 
 Phase 1 stored `DailyEntry` records in `localStorage` under `grand-blue.progress.v1`. Phase 2 makes Postgres the source of truth. After sign-in, valid Phase 1 data is offered for one-time import and is retained locally unless the entire import succeeds. localStorage is otherwise limited to the visual theme and temporary migration input.
 
@@ -79,6 +81,7 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
+npm run types:db
 npx supabase test db
 ```
 

@@ -1,0 +1,4 @@
+import { describe,expect,it } from "vitest";
+import { reorderTasksSchema, taskInputSchema, taskUpdateSchema } from "./learning";
+const task={weekId:"550e8400-e29b-41d4-a716-446655440000",title:"SQL drill",detail:"",scheduledDate:"2026-09-29",estimatedMinutes:60,actualMinutes:0,priority:"high",category:"practice",deadline:null,position:0,completed:false,notes:"",clientRequestId:"550e8400-e29b-41d4-a716-446655440001"};
+describe("task mutations",()=>{it("validates task creation",()=>expect(taskInputSchema.safeParse(task).success).toBe(true));it("validates partial edits",()=>expect(taskUpdateSchema.safeParse({id:"550e8400-e29b-41d4-a716-446655440002",title:"Updated"}).success).toBe(true));it("rejects invalid duration",()=>expect(taskInputSchema.safeParse({...task,estimatedMinutes:-1}).success).toBe(false));it("requires stable reorder IDs",()=>expect(reorderTasksSchema.safeParse({weekId:task.weekId,taskIds:["bad"]}).success).toBe(false));});
