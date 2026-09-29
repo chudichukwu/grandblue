@@ -23,6 +23,7 @@
 .themeButton { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 18px; cursor: pointer; }
 .themeButton:hover { border-color: var(--accent); }
 .signOut { border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; }.signOut:hover { color: var(--text); }
+.notificationLink{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:750}.notificationLink strong{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--warning);color:#160b00;font:800 10px var(--font-geist-mono)}
 .content { padding: 42px clamp(20px, 4vw, 56px) 56px; max-width: 1440px; margin: 0 auto; }
 .mobileNav { display: none; }
 @media (max-width: 760px) {
@@ -33,7 +34,7 @@
   .mobileBrand { display: block; }
   .target { display: none; }
   .content { padding-top: 28px; }
-  .mobileNav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); background: var(--surface-deep); border-top: 1px solid var(--line); }
-  .mobileNav a { text-align: center; padding: 10px; color: var(--muted); font-size: 12px; font-weight: 700; }
+  .mobileNav { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; padding: 8px 8px max(8px, env(safe-area-inset-bottom)); background: var(--surface-deep); border-top: 1px solid var(--line); }
+  .mobileNav a { text-align: center; padding: 10px 3px; color: var(--muted); font-size: 10px; font-weight: 700; }
   .mobileNav .active { color: var(--accent); }
 }

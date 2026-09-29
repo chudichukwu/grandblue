@@ -3,7 +3,7 @@
 .heading h1 { margin: 6px 0 8px; font-size: clamp(32px, 4vw, 52px); line-height: 1; letter-spacing: -.055em; }
 .heading p { color: var(--muted); font-size: 14px; }
 .loading { min-height: 420px; display: grid; place-items: center; color: var(--muted); border: 1px solid var(--line); }
-.metrics { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: 12px; }
+.metrics { display: grid; grid-template-columns: repeat(6, minmax(140px, 1fr)); gap: 12px; }
 .grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, .8fr); gap: 16px; }
 .panel { padding: 22px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; min-width: 0; }
 .panelHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }

@@ -12,7 +12,7 @@ Grand Blue is a dark-first accountability app for a six-week data-analysis sprin
 - `supabase/migrations`: reproducible Postgres schema, constraints, indexes, triggers, grants, and RLS policies.
 - `supabase/tests`: database policy checks for the local Supabase test runner.
 
-Phase 3 adds an idempotently seeded six-week plan, editable plan weeks, task CRUD and ordering, cloud-backed history, timezone-aware dashboard calculations, and retry-safe task creation. Apply both migration files with `npx supabase db push` before running the updated application.
+Phase 4 adds the production timer state machine, focus analytics, cross-tab synchronization, persistent in-app alerts, and a database-backed notification worker. Timer state uses database timestamps and versioned transitions; the browser countdown is only a view of that server state.
 
 Phase 1 stored `DailyEntry` records in `localStorage` under `grand-blue.progress.v1`. Phase 2 makes Postgres the source of truth. After sign-in, valid Phase 1 data is offered for one-time import and is retained locally unless the entire import succeeds. localStorage is otherwise limited to the visual theme and temporary migration input.
 
@@ -72,7 +72,16 @@ In Supabase Authentication URL Configuration, set the production Site URL and al
 
 Email confirmations are enabled in `supabase/config.toml` for local development. Confirm that email confirmation is enabled for the hosted project and customize the hosted email templates as needed.
 
-Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the deployment platform. Do not add a service-role key, Telegram bot token, or VAPID private key to any `NEXT_PUBLIC_` variable. This phase does not require those secrets.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the deployment platform. Do not add a service-role key, Telegram bot token, VAPID private key, or cron secret to any `NEXT_PUBLIC_` variable.
+
+## Timer worker setup
+
+1. Run `npx supabase db push`, then `npm run types:db`.
+2. Set a long random worker secret with `npx supabase secrets set CRON_SECRET=YOUR_RANDOM_SECRET`.
+3. Deploy with `npx supabase functions deploy process-notifications --no-verify-jwt`.
+4. Replace the placeholders in `supabase/cron/setup.sql` locally and run it once in the Supabase SQL Editor. It stores values in Vault and invokes the worker every minute.
+
+The worker uses row locks with `SKIP LOCKED`, stable idempotency keys, stale-claim recovery, and at most five delivery attempts with exponential backoff. Supabase supplies its service-role key in the Edge Function environment; it must never be copied into the frontend.
 
 ## Verification
 

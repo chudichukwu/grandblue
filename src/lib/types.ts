@@ -49,3 +49,18 @@ export interface LearningPlan {
 export interface Profile { timezone: string; displayName: string | null; }
 
 export type LearningTaskInput = Omit<LearningTask, "id" | "completedAt" | "createdAt" | "updatedAt"> & { completed: boolean; clientRequestId: string };
+
+export type TimerMode = "focus" | "short_break" | "long_break";
+export type TimerStatus = "scheduled" | "active" | "paused" | "completed" | "skipped" | "cancelled";
+export interface FocusSession {
+  id: string; mode: TimerMode; status: TimerStatus; durationSeconds: number; startedAt: string;
+  endsAt: string; pausedAt: string | null; completedAt: string | null; skippedAt: string | null;
+  taskId: string | null; remainingSecondsWhenPaused: number | null; actualFocusSeconds: number; version: number;
+}
+export interface TimerPreferences {
+  focusMinutes: number; shortBreakMinutes: number; longBreakMinutes: number; longBreakAfterSessions: number;
+  autoStartBreak: boolean; autoStartFocus: boolean; soundEnabled: boolean; browserNotificationsEnabled: boolean;
+  breakAlertsEnabled: boolean; inAppAlertsEnabled: boolean;
+}
+export interface InAppNotification { id: string; kind: string; title: string; body: string; href: string | null; readAt: string | null; createdAt: string; }
+export interface TimerSnapshot { session: FocusSession | null; preferences: TimerPreferences; notifications: InAppNotification[]; completedFocusToday: number; focusSecondsToday: number; }

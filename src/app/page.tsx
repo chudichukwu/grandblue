@@ -6,6 +6,7 @@ import { WeeklyChart } from "@/components/WeeklyChart";
 import { formatEntryDate } from "@/lib/date";
 import { getDashboardMetrics, totalMinutes } from "@/lib/metrics";
 import { useLearning } from "@/components/LearningProvider";
+import { useTimer } from "@/components/TimerProvider";
 import styles from "./page.module.css";
 
 function hours(minutes: number): string { return `${(minutes / 60).toFixed(1)}h`; }
@@ -13,6 +14,7 @@ function hours(minutes: number): string { return `${(minutes / 60).toFixed(1)}h`
 export default function Dashboard() {
   const { entries, error, hydrated } = useProgress();
   const { plan, profile, loading: planLoading, error: planError } = useLearning();
+  const timer = useTimer();
   const metrics = getDashboardMetrics(entries, plan, profile?.timezone ?? "UTC");
   return <div className={styles.dashboard}>
     <header className={styles.heading}><div><span className="eyebrow">Command center</span><h1>Keep the pressure on.</h1><p>Six weeks. One clear target. Make today count.</p></div><Link href="/check-in" className="primary-button">Log today <span aria-hidden="true">↗</span></Link></header>
@@ -24,6 +26,7 @@ export default function Dashboard() {
         <ProgressCard label="Current streak" value={`${metrics.streak} days`} detail="Consistency compounds" accent="green" />
         <ProgressCard label="Six-week sprint" value={`${metrics.sprintProgress}%`} detail="Time elapsed" progress={metrics.sprintProgress} />
         <ProgressCard label="Course" value={`${metrics.courseProgress}%`} detail={`${entries.reduce((sum, item) => sum + item.modulesCompleted, 0)} of 36 modules`} progress={metrics.courseProgress} accent="orange" />
+        <ProgressCard label="Focus timer" value={`${(timer.focusSecondsToday / 3600).toFixed(1)}h`} detail={`${timer.completedFocusToday} sessions today`} accent="green" />
       </section>
       <div className={styles.grid}>
         <section className={`${styles.panel} ${styles.chartPanel}`}><div className={styles.panelHeading}><div><span className="eyebrow">Workload</span><h2>Weekly distribution</h2></div><span className={styles.unit}>HOURS</span></div><WeeklyChart entries={metrics.weeklyEntries} /></section>

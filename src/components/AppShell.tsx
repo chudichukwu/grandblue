@@ -7,6 +7,8 @@ import { ProgressProvider } from "@/components/ProgressProvider";
 import { LocalDataImport } from "@/components/LocalDataImport";
 import { LearningProvider } from "@/components/LearningProvider";
 import { signOut } from "@/app/auth/actions";
+import { TimerProvider, useTimer } from "@/components/TimerProvider";
+import { BreakBanner } from "@/components/BreakBanner";
 import styles from "./AppShell.module.css";
 
 const navigation = [
@@ -14,7 +16,10 @@ const navigation = [
   { href: "/check-in", label: "Daily check-in", icon: "02" },
   { href: "/plan", label: "Six-week plan", icon: "03" },
   { href: "/history", label: "History", icon: "04" },
+  { href: "/timer", label: "Focus timer", icon: "05" },
 ];
+
+function NotificationLink(){const{notifications}=useTimer();const count=notifications.filter((item)=>!item.readAt).length;return <Link href="/notifications" className={styles.notificationLink} aria-label={`${count} unread notifications`}>Alerts{count>0&&<strong>{count}</strong>}</Link>;}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,7 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (pathname.startsWith("/auth/")) return <>{children}</>;
 
   return (
-    <ProgressProvider><LearningProvider>
+    <ProgressProvider><LearningProvider><TimerProvider>
       <div className={styles.shell}>
         <aside className={styles.sidebar}>
           <Link href="/" className={styles.brand} aria-label="Grand Blue dashboard">
@@ -69,12 +74,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className={styles.mobileBrand}>grand blue</span>
             <div className={styles.topbarActions}>
               <span className={styles.target}>TARGET · 30 HOURS</span>
+              <NotificationLink />
               <form action={signOut}><button className={styles.signOut} type="submit">Sign out</button></form>
               <button className={styles.themeButton} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
                 {theme === "dark" ? "☼" : "◐"}
               </button>
             </div>
           </header>
+          <BreakBanner />
           <LocalDataImport />
           <main className={styles.content}>{children}</main>
           <nav className={styles.mobileNav} aria-label="Mobile navigation">
@@ -82,6 +89,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </div>
-    </LearningProvider></ProgressProvider>
+    </TimerProvider></LearningProvider></ProgressProvider>
   );
 }

@@ -1,0 +1,5 @@
+import { z } from "zod";
+export const timerStartSchema = z.object({ mode: z.enum(["focus", "short_break", "long_break"]), durationSeconds: z.number().int().min(60).max(21600), taskId: z.string().uuid().nullable().optional(), requestId: z.string().uuid() });
+export const timerMutationSchema = z.object({ sessionId: z.string().uuid(), expectedVersion: z.number().int().positive(), action: z.enum(["pause", "resume", "complete", "skip", "cancel"]) });
+export const timerPreferencesSchema = z.object({ focusMinutes: z.number().int().min(1).max(180), shortBreakMinutes: z.number().int().min(1).max(60), longBreakMinutes: z.number().int().min(1).max(120), longBreakAfterSessions: z.number().int().min(1).max(12), autoStartBreak: z.boolean(), autoStartFocus: z.boolean(), soundEnabled: z.boolean(), browserNotificationsEnabled: z.boolean(), breakAlertsEnabled: z.boolean(), inAppAlertsEnabled: z.boolean() });
+export const notificationUpdateSchema = z.object({ id: z.string().uuid().optional(), all: z.boolean().optional() }).refine((value) => value.id || value.all, "Choose a notification to mark as read.");

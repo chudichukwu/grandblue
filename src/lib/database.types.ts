@@ -101,48 +101,131 @@ export type Database = {
       }
       focus_sessions: {
         Row: {
+          accumulated_pause_seconds: number
+          actual_focus_seconds: number
           cancelled_at: string | null
           completed_at: string | null
           created_at: string
+          duration_seconds: number
           ends_at: string
           id: string
           paused_at: string | null
-          planned_duration_seconds: number
+          remaining_seconds_when_paused: number | null
           session_type: string
+          skipped_at: string | null
+          start_request_id: string
           started_at: string
           status: Database["public"]["Enums"]["focus_session_status"]
+          task_id: string | null
           updated_at: string
           user_id: string
+          version: number
         }
         Insert: {
+          accumulated_pause_seconds?: number
+          actual_focus_seconds?: number
           cancelled_at?: string | null
           completed_at?: string | null
           created_at?: string
+          duration_seconds: number
           ends_at: string
           id?: string
           paused_at?: string | null
-          planned_duration_seconds: number
+          remaining_seconds_when_paused?: number | null
           session_type: string
+          skipped_at?: string | null
+          start_request_id?: string
           started_at: string
           status?: Database["public"]["Enums"]["focus_session_status"]
+          task_id?: string | null
           updated_at?: string
           user_id: string
+          version?: number
         }
         Update: {
+          accumulated_pause_seconds?: number
+          actual_focus_seconds?: number
           cancelled_at?: string | null
           completed_at?: string | null
           created_at?: string
+          duration_seconds?: number
           ends_at?: string
           id?: string
           paused_at?: string | null
-          planned_duration_seconds?: number
+          remaining_seconds_when_paused?: number | null
           session_type?: string
+          skipped_at?: string | null
+          start_request_id?: string
           started_at?: string
           status?: Database["public"]["Enums"]["focus_session_status"]
+          task_id?: string | null
           updated_at?: string
           user_id?: string
+          version?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "focus_sessions_task_owner_fk"
+            columns: ["task_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      in_app_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          focus_session_id: string | null
+          href: string | null
+          id: string
+          kind: string
+          read_at: string | null
+          task_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          focus_session_id?: string | null
+          href?: string | null
+          id?: string
+          kind: string
+          read_at?: string | null
+          task_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          focus_session_id?: string | null
+          href?: string | null
+          id?: string
+          kind?: string
+          read_at?: string | null
+          task_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "in_app_notifications_focus_session_id_user_id_fkey"
+            columns: ["focus_session_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "focus_sessions"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "in_app_notifications_task_id_user_id_fkey"
+            columns: ["task_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
       }
       learning_plans: {
         Row: {
@@ -241,10 +324,14 @@ export type Database = {
       }
       notification_preferences: {
         Row: {
+          auto_start_break: boolean
+          auto_start_focus: boolean
           break_alerts_enabled: boolean
           browser_push_enabled: boolean
           created_at: string
           focus_minutes: number
+          in_app_alerts_enabled: boolean
+          long_break_after_sessions: number
           long_break_minutes: number
           short_break_minutes: number
           sound_enabled: boolean
@@ -253,10 +340,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          auto_start_break?: boolean
+          auto_start_focus?: boolean
           break_alerts_enabled?: boolean
           browser_push_enabled?: boolean
           created_at?: string
           focus_minutes?: number
+          in_app_alerts_enabled?: boolean
+          long_break_after_sessions?: number
           long_break_minutes?: number
           short_break_minutes?: number
           sound_enabled?: boolean
@@ -265,10 +356,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          auto_start_break?: boolean
+          auto_start_focus?: boolean
           break_alerts_enabled?: boolean
           browser_push_enabled?: boolean
           created_at?: string
           focus_minutes?: number
+          in_app_alerts_enabled?: boolean
+          long_break_after_sessions?: number
           long_break_minutes?: number
           short_break_minutes?: number
           sound_enabled?: boolean
@@ -565,10 +660,182 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_due_notifications: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempt_count: number
+          channel: Database["public"]["Enums"]["notification_channel"]
+          claimed_at: string | null
+          created_at: string
+          delivered_at: string | null
+          focus_session_id: string | null
+          id: string
+          idempotency_key: string
+          last_error: string | null
+          payload: Json
+          scheduled_for: string
+          status: Database["public"]["Enums"]["notification_status"]
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "scheduled_notifications"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       ensure_default_learning_plan: { Args: never; Returns: string }
+      fail_notification: {
+        Args: {
+          p_error: string
+          p_max_attempts?: number
+          p_notification_id: string
+        }
+        Returns: undefined
+      }
+      process_timer_notification: {
+        Args: { p_notification_id: string }
+        Returns: undefined
+      }
+      timer_finish: {
+        Args: {
+          p_action: string
+          p_expected_version: number
+          p_session_id: string
+        }
+        Returns: {
+          accumulated_pause_seconds: number
+          actual_focus_seconds: number
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          duration_seconds: number
+          ends_at: string
+          id: string
+          paused_at: string | null
+          remaining_seconds_when_paused: number | null
+          session_type: string
+          skipped_at: string | null
+          start_request_id: string
+          started_at: string
+          status: Database["public"]["Enums"]["focus_session_status"]
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "focus_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      timer_pause: {
+        Args: { p_expected_version: number; p_session_id: string }
+        Returns: {
+          accumulated_pause_seconds: number
+          actual_focus_seconds: number
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          duration_seconds: number
+          ends_at: string
+          id: string
+          paused_at: string | null
+          remaining_seconds_when_paused: number | null
+          session_type: string
+          skipped_at: string | null
+          start_request_id: string
+          started_at: string
+          status: Database["public"]["Enums"]["focus_session_status"]
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "focus_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      timer_resume: {
+        Args: { p_expected_version: number; p_session_id: string }
+        Returns: {
+          accumulated_pause_seconds: number
+          actual_focus_seconds: number
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          duration_seconds: number
+          ends_at: string
+          id: string
+          paused_at: string | null
+          remaining_seconds_when_paused: number | null
+          session_type: string
+          skipped_at: string | null
+          start_request_id: string
+          started_at: string
+          status: Database["public"]["Enums"]["focus_session_status"]
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "focus_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      timer_start: {
+        Args: {
+          p_duration_seconds: number
+          p_request_id: string
+          p_session_type: string
+          p_task_id: string
+        }
+        Returns: {
+          accumulated_pause_seconds: number
+          actual_focus_seconds: number
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          duration_seconds: number
+          ends_at: string
+          id: string
+          paused_at: string | null
+          remaining_seconds_when_paused: number | null
+          session_type: string
+          skipped_at: string | null
+          start_request_id: string
+          started_at: string
+          status: Database["public"]["Enums"]["focus_session_status"]
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "focus_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
-      focus_session_status: "active" | "paused" | "completed" | "cancelled"
+      focus_session_status:
+        | "scheduled"
+        | "active"
+        | "paused"
+        | "completed"
+        | "skipped"
+        | "cancelled"
       notification_channel: "browser_push" | "telegram" | "email" | "in_app"
       notification_status:
         | "pending"
@@ -706,7 +973,14 @@ export const Constants = {
   },
   public: {
     Enums: {
-      focus_session_status: ["active", "paused", "completed", "cancelled"],
+      focus_session_status: [
+        "scheduled",
+        "active",
+        "paused",
+        "completed",
+        "skipped",
+        "cancelled",
+      ],
       notification_channel: ["browser_push", "telegram", "email", "in_app"],
       notification_status: [
         "pending",

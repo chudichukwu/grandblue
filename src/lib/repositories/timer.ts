@@ -1,0 +1,26 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { FocusSession, InAppNotification, TimerPreferences, TimerSnapshot } from "@/lib/types";
+type Row = Record<string, unknown>;
+const mapSession = (r: Row): FocusSession => ({ id:String(r.id),mode:r.session_type as FocusSession["mode"],status:r.status as FocusSession["status"],durationSeconds:Number(r.duration_seconds),startedAt:String(r.started_at),endsAt:String(r.ends_at),pausedAt:r.paused_at as string|null,completedAt:r.completed_at as string|null,skippedAt:r.skipped_at as string|null,taskId:r.task_id as string|null,remainingSecondsWhenPaused:r.remaining_seconds_when_paused as number|null,actualFocusSeconds:Number(r.actual_focus_seconds),version:Number(r.version) });
+const mapPreferences = (r: Row): TimerPreferences => ({ focusMinutes:Number(r.focus_minutes),shortBreakMinutes:Number(r.short_break_minutes),longBreakMinutes:Number(r.long_break_minutes),longBreakAfterSessions:Number(r.long_break_after_sessions),autoStartBreak:Boolean(r.auto_start_break),autoStartFocus:Boolean(r.auto_start_focus),soundEnabled:Boolean(r.sound_enabled),browserNotificationsEnabled:Boolean(r.browser_push_enabled),breakAlertsEnabled:Boolean(r.break_alerts_enabled),inAppAlertsEnabled:Boolean(r.in_app_alerts_enabled) });
+const mapNotice = (r: Row): InAppNotification => ({ id:String(r.id),kind:String(r.kind),title:String(r.title),body:String(r.body),href:r.href as string|null,readAt:r.read_at as string|null,createdAt:String(r.created_at) });
+export class SupabaseTimerRepository {
+  constructor(private supabase: SupabaseClient, private userId: string) {}
+  async snapshot(): Promise<TimerSnapshot> {
+    await this.supabase.from("notification_preferences").upsert({user_id:this.userId},{onConflict:"user_id",ignoreDuplicates:true});
+    const [sessionResult,prefResult,noticeResult,historyResult,profileResult] = await Promise.all([
+      this.supabase.from("focus_sessions").select("*").eq("user_id",this.userId).in("status",["active","paused"]).order("created_at",{ascending:false}).limit(1).maybeSingle(),
+      this.supabase.from("notification_preferences").select("*").eq("user_id",this.userId).single(),
+      this.supabase.from("in_app_notifications").select("*").eq("user_id",this.userId).order("created_at",{ascending:false}).limit(30),
+      this.supabase.from("focus_sessions").select("actual_focus_seconds,completed_at,status,session_type").eq("user_id",this.userId).eq("session_type","focus").eq("status","completed").gte("completed_at",new Date(Date.now()-36*60*60*1000).toISOString()),
+      this.supabase.from("profiles").select("timezone").eq("user_id",this.userId).single(),
+    ]);
+    for (const result of [sessionResult,prefResult,noticeResult,historyResult,profileResult]) if (result.error) throw new Error(result.error.message);
+    const timezone=String(profileResult.data?.timezone??"UTC");const key=(value:string|Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:timezone,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(value));const today=key(new Date());const completed=(historyResult.data??[]).filter((r)=>r.completed_at&&key(r.completed_at)===today);
+    return { session: sessionResult.data ? mapSession(sessionResult.data as Row) : null, preferences: mapPreferences(prefResult.data as Row), notifications:(noticeResult.data??[]).map((r)=>mapNotice(r as Row)), completedFocusToday:completed.length, focusSecondsToday:completed.reduce((sum,r)=>sum+Number(r.actual_focus_seconds),0) };
+  }
+  async start(input:{mode:string;durationSeconds:number;taskId?:string|null;requestId:string}) { const {data,error}=await this.supabase.rpc("timer_start",{p_session_type:input.mode,p_duration_seconds:input.durationSeconds,p_task_id:input.taskId??null,p_request_id:input.requestId}); if(error) throw new Error(error.message); return mapSession(data as Row); }
+  async mutate(input:{sessionId:string;expectedVersion:number;action:string}) { const fn=input.action==="pause"?"timer_pause":input.action==="resume"?"timer_resume":"timer_finish"; const args=fn==="timer_finish"?{p_session_id:input.sessionId,p_expected_version:input.expectedVersion,p_action:input.action}:{p_session_id:input.sessionId,p_expected_version:input.expectedVersion}; const {data,error}=await this.supabase.rpc(fn,args); if(error) throw new Error(error.message); return mapSession(data as Row); }
+  async savePreferences(p:TimerPreferences) { const row={user_id:this.userId,focus_minutes:p.focusMinutes,short_break_minutes:p.shortBreakMinutes,long_break_minutes:p.longBreakMinutes,long_break_after_sessions:p.longBreakAfterSessions,auto_start_break:p.autoStartBreak,auto_start_focus:p.autoStartFocus,sound_enabled:p.soundEnabled,browser_push_enabled:p.browserNotificationsEnabled,break_alerts_enabled:p.breakAlertsEnabled,in_app_alerts_enabled:p.inAppAlertsEnabled}; const {error}=await this.supabase.from("notification_preferences").upsert(row); if(error) throw new Error(error.message); }
+  async markRead(id?:string) { let query=this.supabase.from("in_app_notifications").update({read_at:new Date().toISOString()}).eq("user_id",this.userId).is("read_at",null); if(id) query=query.eq("id",id); const {error}=await query; if(error) throw new Error(error.message); }
+}
