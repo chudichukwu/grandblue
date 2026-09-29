@@ -1,19 +1,720 @@
-// Generated-shape database contract synchronized with migrations through 20260929100000.
-// Regenerate from a linked project with: npm run types:db
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
-type Table<Row, Insert = Partial<Row>, Update = Partial<Insert>> = { Row: Row; Insert: Insert; Update: Update; Relationships: [] };
-type Owned = { id: string; user_id: string; created_at: string; updated_at: string };
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export type Database = { public: { Tables: {
-  profiles: Table<{ user_id:string; display_name:string|null; timezone:string; local_data_imported_at:string|null; created_at:string; updated_at:string }>;
-  daily_entries: Table<Owned & { entry_date:string; coursera_minutes:number; practice_minutes:number; project_minutes:number; review_minutes:number; modules_completed:number; energy_score:number; focus_score:number; completed_tasks:string; blockers:string; reflection:string; import_source:string|null; imported_source_id:string|null }>;
-  learning_plans: Table<Owned & { title:string; description:string; starts_on:string; ends_on:string; weekly_target_minutes:number; status:"draft"|"active"|"completed"|"archived"; is_default:boolean; notes:string }>;
-  plan_weeks: Table<Owned & { learning_plan_id:string; week_number:number; title:string; description:string; outcome:string; starts_on:string|null; ends_on:string|null; target_minutes:number; notes:string }>;
-  tasks: Table<Owned & { plan_week_id:string; title:string; detail:string; position:number; completed_at:string|null; scheduled_date:string|null; estimated_minutes:number; actual_minutes:number; priority:"low"|"medium"|"high"; category:"course"|"practice"|"project"|"review"; deadline:string|null; notes:string; client_request_id:string }>;
-  focus_sessions: Table<Owned & { session_type:string; status:Database["public"]["Enums"]["focus_session_status"]; planned_duration_seconds:number; started_at:string; ends_at:string; paused_at:string|null; completed_at:string|null; cancelled_at:string|null }>;
-  notification_preferences: Table<{ user_id:string; sound_enabled:boolean; browser_push_enabled:boolean; telegram_enabled:boolean; break_alerts_enabled:boolean; focus_minutes:number; short_break_minutes:number; long_break_minutes:number; created_at:string; updated_at:string }>;
-  push_subscriptions: Table<Owned & { endpoint:string; p256dh:string; auth_secret:string; user_agent:string|null; expires_at:string|null; revoked_at:string|null }>;
-  telegram_connections: Table<Owned & { telegram_chat_id:string; telegram_username:string|null; verified_at:string|null; revoked_at:string|null }>;
-  scheduled_notifications: Table<Owned & { focus_session_id:string|null; channel:Database["public"]["Enums"]["notification_channel"]; status:Database["public"]["Enums"]["notification_status"]; scheduled_for:string; claimed_at:string|null; delivered_at:string|null; attempt_count:number; last_error:string|null; idempotency_key:string; payload:Json }>;
-  notification_deliveries: Table<{ id:string; user_id:string; scheduled_notification_id:string; channel:Database["public"]["Enums"]["notification_channel"]; attempt_number:number; status:Database["public"]["Enums"]["notification_status"]; provider_message_id:string|null; provider_result:Json; error_message:string|null; attempted_at:string; created_at:string }>;
-}; Views: Record<string, never>; Functions: { ensure_default_learning_plan: { Args: Record<PropertyKey, never>; Returns: string } }; Enums: { focus_session_status:"active"|"paused"|"completed"|"cancelled"; notification_status:"pending"|"processing"|"delivered"|"failed"|"cancelled"; notification_channel:"browser_push"|"telegram"|"email"|"in_app" }; CompositeTypes: Record<string, never> } };
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      daily_entries: {
+        Row: {
+          blockers: string
+          completed_tasks: string
+          coursera_minutes: number
+          created_at: string
+          energy_score: number
+          entry_date: string
+          focus_score: number
+          id: string
+          import_source: string | null
+          imported_source_id: string | null
+          modules_completed: number
+          practice_minutes: number
+          project_minutes: number
+          reflection: string
+          review_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          blockers?: string
+          completed_tasks?: string
+          coursera_minutes?: number
+          created_at?: string
+          energy_score: number
+          entry_date: string
+          focus_score: number
+          id?: string
+          import_source?: string | null
+          imported_source_id?: string | null
+          modules_completed?: number
+          practice_minutes?: number
+          project_minutes?: number
+          reflection?: string
+          review_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          blockers?: string
+          completed_tasks?: string
+          coursera_minutes?: number
+          created_at?: string
+          energy_score?: number
+          entry_date?: string
+          focus_score?: number
+          id?: string
+          import_source?: string | null
+          imported_source_id?: string | null
+          modules_completed?: number
+          practice_minutes?: number
+          project_minutes?: number
+          reflection?: string
+          review_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      focus_sessions: {
+        Row: {
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          ends_at: string
+          id: string
+          paused_at: string | null
+          planned_duration_seconds: number
+          session_type: string
+          started_at: string
+          status: Database["public"]["Enums"]["focus_session_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          ends_at: string
+          id?: string
+          paused_at?: string | null
+          planned_duration_seconds: number
+          session_type: string
+          started_at: string
+          status?: Database["public"]["Enums"]["focus_session_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          ends_at?: string
+          id?: string
+          paused_at?: string | null
+          planned_duration_seconds?: number
+          session_type?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["focus_session_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_plans: {
+        Row: {
+          created_at: string
+          description: string
+          ends_on: string
+          id: string
+          is_default: boolean
+          notes: string
+          starts_on: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          weekly_target_minutes: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          ends_on: string
+          id?: string
+          is_default?: boolean
+          notes?: string
+          starts_on: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          weekly_target_minutes?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          ends_on?: string
+          id?: string
+          is_default?: boolean
+          notes?: string
+          starts_on?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          weekly_target_minutes?: number
+        }
+        Relationships: []
+      }
+      notification_deliveries: {
+        Row: {
+          attempt_number: number
+          attempted_at: string
+          channel: Database["public"]["Enums"]["notification_channel"]
+          created_at: string
+          error_message: string | null
+          id: string
+          provider_message_id: string | null
+          provider_result: Json
+          scheduled_notification_id: string
+          status: Database["public"]["Enums"]["notification_status"]
+          user_id: string
+        }
+        Insert: {
+          attempt_number: number
+          attempted_at?: string
+          channel: Database["public"]["Enums"]["notification_channel"]
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          provider_message_id?: string | null
+          provider_result?: Json
+          scheduled_notification_id: string
+          status: Database["public"]["Enums"]["notification_status"]
+          user_id: string
+        }
+        Update: {
+          attempt_number?: number
+          attempted_at?: string
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          provider_message_id?: string | null
+          provider_result?: Json
+          scheduled_notification_id?: string
+          status?: Database["public"]["Enums"]["notification_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_scheduled_notification_id_user_id_fkey"
+            columns: ["scheduled_notification_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "scheduled_notifications"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          break_alerts_enabled: boolean
+          browser_push_enabled: boolean
+          created_at: string
+          focus_minutes: number
+          long_break_minutes: number
+          short_break_minutes: number
+          sound_enabled: boolean
+          telegram_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          break_alerts_enabled?: boolean
+          browser_push_enabled?: boolean
+          created_at?: string
+          focus_minutes?: number
+          long_break_minutes?: number
+          short_break_minutes?: number
+          sound_enabled?: boolean
+          telegram_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          break_alerts_enabled?: boolean
+          browser_push_enabled?: boolean
+          created_at?: string
+          focus_minutes?: number
+          long_break_minutes?: number
+          short_break_minutes?: number
+          sound_enabled?: boolean
+          telegram_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plan_weeks: {
+        Row: {
+          created_at: string
+          description: string
+          ends_on: string | null
+          id: string
+          learning_plan_id: string
+          notes: string
+          outcome: string
+          starts_on: string | null
+          target_minutes: number
+          title: string
+          updated_at: string
+          user_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          ends_on?: string | null
+          id?: string
+          learning_plan_id: string
+          notes?: string
+          outcome?: string
+          starts_on?: string | null
+          target_minutes?: number
+          title: string
+          updated_at?: string
+          user_id: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          ends_on?: string | null
+          id?: string
+          learning_plan_id?: string
+          notes?: string
+          outcome?: string
+          starts_on?: string | null
+          target_minutes?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_weeks_learning_plan_id_user_id_fkey"
+            columns: ["learning_plan_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "learning_plans"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          local_data_imported_at: string | null
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          local_data_imported_at?: string | null
+          timezone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          local_data_imported_at?: string | null
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_secret: string
+          created_at: string
+          endpoint: string
+          expires_at: string | null
+          id: string
+          p256dh: string
+          revoked_at: string | null
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth_secret: string
+          created_at?: string
+          endpoint: string
+          expires_at?: string | null
+          id?: string
+          p256dh: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth_secret?: string
+          created_at?: string
+          endpoint?: string
+          expires_at?: string | null
+          id?: string
+          p256dh?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scheduled_notifications: {
+        Row: {
+          attempt_count: number
+          channel: Database["public"]["Enums"]["notification_channel"]
+          claimed_at: string | null
+          created_at: string
+          delivered_at: string | null
+          focus_session_id: string | null
+          id: string
+          idempotency_key: string
+          last_error: string | null
+          payload: Json
+          scheduled_for: string
+          status: Database["public"]["Enums"]["notification_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempt_count?: number
+          channel: Database["public"]["Enums"]["notification_channel"]
+          claimed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          focus_session_id?: string | null
+          id?: string
+          idempotency_key: string
+          last_error?: string | null
+          payload?: Json
+          scheduled_for: string
+          status?: Database["public"]["Enums"]["notification_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempt_count?: number
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          claimed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          focus_session_id?: string | null
+          id?: string
+          idempotency_key?: string
+          last_error?: string | null
+          payload?: Json
+          scheduled_for?: string
+          status?: Database["public"]["Enums"]["notification_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_notifications_focus_session_id_user_id_fkey"
+            columns: ["focus_session_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "focus_sessions"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          actual_minutes: number
+          category: string
+          client_request_id: string
+          completed_at: string | null
+          created_at: string
+          deadline: string | null
+          detail: string
+          estimated_minutes: number
+          id: string
+          notes: string
+          plan_week_id: string
+          position: number
+          priority: string
+          scheduled_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_minutes?: number
+          category?: string
+          client_request_id?: string
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          detail?: string
+          estimated_minutes?: number
+          id?: string
+          notes?: string
+          plan_week_id: string
+          position?: number
+          priority?: string
+          scheduled_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_minutes?: number
+          category?: string
+          client_request_id?: string
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          detail?: string
+          estimated_minutes?: number
+          id?: string
+          notes?: string
+          plan_week_id?: string
+          position?: number
+          priority?: string
+          scheduled_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_plan_week_id_user_id_fkey"
+            columns: ["plan_week_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "plan_weeks"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      telegram_connections: {
+        Row: {
+          created_at: string
+          id: string
+          revoked_at: string | null
+          telegram_chat_id: string
+          telegram_username: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          revoked_at?: string | null
+          telegram_chat_id: string
+          telegram_username?: string | null
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          revoked_at?: string | null
+          telegram_chat_id?: string
+          telegram_username?: string | null
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      ensure_default_learning_plan: { Args: never; Returns: string }
+    }
+    Enums: {
+      focus_session_status: "active" | "paused" | "completed" | "cancelled"
+      notification_channel: "browser_push" | "telegram" | "email" | "in_app"
+      notification_status:
+        | "pending"
+        | "processing"
+        | "delivered"
+        | "failed"
+        | "cancelled"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      focus_session_status: ["active", "paused", "completed", "cancelled"],
+      notification_channel: ["browser_push", "telegram", "email", "in_app"],
+      notification_status: [
+        "pending",
+        "processing",
+        "delivered",
+        "failed",
+        "cancelled",
+      ],
+    },
+  },
+} as const
